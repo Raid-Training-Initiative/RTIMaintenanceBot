@@ -7,13 +7,7 @@ To provide an API token:
   * Create an application at the [Discord Developer Portal](https://discord.com/developers/applications).
   * Click the bot settings for your application and add a bot.
   * Copy the generated bot token.
-  * Create a file called `ConfigDebug.json` in the root directory, with the following contents:
-```json
-{
-    "apiKey": "paste the bot token here"
-}
-```
-  * Optionally: if you plan to run with Docker, create a file called `Config.json` in the root directory, with the following contents:
+  * Create a file called `Config.json` in the root directory, with the following contents:
 ```json
 {
     "apiKey": "paste the bot token here"
@@ -29,7 +23,7 @@ Then, open the link and select the server you want to invite the bot to.
 ## Installing
 * Clone the repo:
 ```bash
-git clone https://github.com/Daniel123643/RTIBot.git
+git clone https://github.com/StephanWells/RTIMaintenanceBot.git
 ```
 
 ## Running
