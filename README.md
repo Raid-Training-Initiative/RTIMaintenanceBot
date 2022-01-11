@@ -10,13 +10,14 @@ To provide an API token:
   * Create a file called `Config.json` in the root directory, with the following contents:
 ```json
 {
-    "apiKey": "paste the bot token here"
+    "apiKey": "Paste the bot's Token here",
+    "clientId": "Paste your Client ID here"
 }
 ```
 
 To invite the bot, copy your Client ID from the General Information page on the discord developer portal.
 Then insert it into the `client_id` parameter in the following URL:
-https://discord.com/api/oauth2/authorize?client_id=INSERT_CLIENT_ID_HERE&permissions=545394785521&scope=bot
+https://discord.com/api/oauth2/authorize?client_id=INSERT_CLIENT_ID_HERE&permissions=545394785521&scope=bot%20applications.commands
 
 Then, open the link and select the server you want to invite the bot to.
 
@@ -33,6 +34,9 @@ git clone https://github.com/StephanWells/RTIMaintenanceBot.git
 ```bash
 npm install
 ```
+
+#### Registering
+* Run the `deploy-commands.js` script to register command files
 
 #### Execution
 * Transpile TypeScript files into JavaScript code:
