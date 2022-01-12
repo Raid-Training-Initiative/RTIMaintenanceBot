@@ -9,11 +9,11 @@
     "baseUrl": ".",
     "rootDir": "./",
     "typeRoots": [
-      "src/customTypings",
-      "node_modules/@types"
+      "node_modules/@types",
+      "types"
     ]
   },
   "files": ["./node_modules/@types/node/index.d.ts"],
-  "include": ["src/**/*.ts"],
+  "include": ["src/**/*.ts", "types/discord.d.ts"],
   "exclude": ["node_modules"]
 }
