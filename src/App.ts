@@ -1,4 +1,4 @@
-import { IConfig } from "./util/Config";
+import { IConfig } from "./util/interface/IConfig";
 import { Logger, Severity } from "./util/Logger";
 import { Client, Collection, Intents } from "discord.js";
 import * as fs from "fs";
@@ -83,10 +83,10 @@ function loadConfiguration(): IConfig | null {
     switch (config) {
         case "Release":
             confFile = "../../Config.json";
-            break;
+        break;
         case "Debug":
             confFile = "../../Config.json";
-            break;
+        break;
         default:
             Logger.log(Severity.Error, "Invalid configuration name");
             return null;
