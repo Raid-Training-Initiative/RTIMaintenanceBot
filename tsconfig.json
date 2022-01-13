@@ -8,8 +8,6 @@
     "noUnusedLocals": false,
     "baseUrl": ".",
     "rootDir": "./",
-    "resolveJsonModule": true,
-    "esModuleInterop": true,
     "typeRoots": [
       "types",
       "node_modules/@types"
