@@ -3,6 +3,7 @@ const fs = require('fs');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { apiKey, clientId } = require('./Config.json');
+const guildId = "633789692893986856"; // For testing commands in the guild scope.
 
 let commandType = process.argv[2];
 if (!commandType) {
@@ -26,7 +27,7 @@ const rest = new REST({ version: '9' }).setToken(apiKey);
 
 switch (commandType) {
 	case "Guild":
-		rest.put(Routes.applicationGuildCommands(clientId, "633789692893986856"), { body: commands })
+		rest.put(Routes.applicationGuildCommands(clientId, guildId), { body: commands })
 			.then(() => console.log('Successfully registered application guild commands.'))
 			.catch(console.error);
 		break;

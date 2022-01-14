@@ -36,7 +36,11 @@ npm install
 ```
 
 #### Registering
-* Run the `deploy-commands.js` script to register command files
+* For testing any new functionality or changes, obtain the ID of your Discord testing server and replace the `guildId` constant in the `deploy-commands.js` script.
+* Run the `deploy-commands.js` script to register command files.
+    - This is done by running `node deploy-commands.js Guild` for guild application commands and `node deploy-commands.js Global` for global application commands.
+* Guild application commands are only usable in the specified Discord server, while global application commands are usable in any server that the bot is in. Commands should be tested as guild application commands due to them getting updated instantly, whereas global commands are cached and are only guaranteed to be updated after 1 hour.
+* More information can be found in the [Discord.js documentation](https://discordjs.guide/interactions/registering-slash-commands.html#guild-commands).
 
 #### Execution
 * Transpile TypeScript files into JavaScript code:
