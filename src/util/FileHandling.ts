@@ -15,6 +15,10 @@ export default class FileHandling {
         return fs.existsSync(`${FileHandling.DATA_DIR}/${guildId}`);
     }
 
+    private static refreshThreadDataExists(guildId: string): boolean {
+        return fs.existsSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`);
+    }
+
     private static createFoldersIfNotExist(guildId: string) {
         if (!this.dataExists()) {
             fs.mkdirSync(`${FileHandling.DATA_DIR}`);
@@ -25,12 +29,12 @@ export default class FileHandling {
         }
     }
 
-    public static async addRefreshThread(guildId: string, channelId: string, threadId: string, interval: RefreshRate): Promise<void> {
+    public static async addRefreshThread(guildId: string, channelId: string, threadId: string, refreshRate: RefreshRate): Promise<void> {
         this.createFoldersIfNotExist(guildId);
 
         let refreshThreadData: { threads: IRefreshThread[] };
 
-        if (!fs.existsSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`)) {
+        if (!this.refreshThreadDataExists(guildId)) {
             refreshThreadData = { threads: []};
             fs.writeFileSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, JSON.stringify(refreshThreadData, null, 2), "utf-8");
         } else {
@@ -41,7 +45,7 @@ export default class FileHandling {
         const newRefreshThread: IRefreshThread = {
             channelId: channelId,
             threadId: threadId,
-            interval: interval
+            refreshRate: refreshRate
         }
         refreshThreads.push(newRefreshThread);
 
@@ -50,5 +54,35 @@ export default class FileHandling {
                 Logger.logError(Severity.Error, err);
             }
         });
+    }
+
+    public static async removeRefreshThread(guildId: string, channelId: string, threadId: string): Promise<boolean> {
+        if (!this.dataExists() || !this.guildDataExists(guildId) || !this.refreshThreadDataExists(guildId)) {
+            return false;
+        }
+
+        const refreshThreadData = JSON.parse(fs.readFileSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, 'utf8'));
+        const refreshThreads: IRefreshThread[] = refreshThreadData.threads;
+        if (refreshThreads == null) {
+            return false;
+        }
+
+        const foundRefreshThreads = refreshThreads.filter(refreshThread => 
+            refreshThread.channelId != channelId &&
+            refreshThread.threadId != threadId);
+        
+        // If no threads were found with the specified channel and thread ID
+        if (foundRefreshThreads.length == refreshThreads.length) {
+            return false;
+        }
+
+        fs.writeFile(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, JSON.stringify({threads: foundRefreshThreads}, null, 2), "utf-8", (err) => {
+            if (err) {
+                Logger.logError(Severity.Error, err);
+                return false;
+            }
+        });
+
+        return true;
     }
 }

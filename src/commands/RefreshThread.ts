@@ -47,23 +47,30 @@ export default class RefreshThread extends Command {
     public async execute(interaction: CommandInteraction): Promise<void> {
         Logger.log(Severity.Info, `Command called: ${this._data.name}`);
 
+        const guildId: string | null = interaction.guildId;
+        const channelId: string | undefined = interaction.options.getChannel("channel")?.id;
+        const threadId: string | null = interaction.options.getString("thread_id");
+
+        if (!guildId || !channelId || !threadId) {
+            return interaction.reply("Error! Thread not found");
+        }
+
         switch (interaction.options.getSubcommand()) {
             case "add": {
-                const guildId: string | null = interaction.guildId;
-                const channelId: string | undefined = interaction.options.getChannel("channel")?.id;
-                const threadId: string | null = interaction.options.getString("thread_id");
-                let interval: string | null = interaction.options.getString("refresh_rate", false);
-                interval = interval == null ? RefreshRate.WEEKLY : interval;
-                
-                if (!guildId || !channelId || !threadId) {
-                    return interaction.reply("Error! Thread not found");
-                }
-                console.log(RefreshRate[interval.toUpperCase()]);
-                FileHandling.addRefreshThread(guildId, channelId, threadId, RefreshRate[interval.toUpperCase()])
+                let refreshRate: string | null = interaction.options.getString("refresh_rate", false);
+                refreshRate = refreshRate == null ? RefreshRate.WEEKLY : refreshRate;
+                FileHandling.addRefreshThread(guildId, channelId, threadId, RefreshRate[refreshRate.toUpperCase()])
+
                 return interaction.reply("Successfully added thread to refresh schedule")
             }
             case "remove": {
-                return interaction.reply("Not implemented")
+                const found: boolean = await FileHandling.removeRefreshThread(guildId, channelId, threadId);
+
+                if (found) {
+                    return interaction.reply("Successfully removed thread from refresh schedule");
+                } else {
+                    return interaction.reply("Error! Could not find thread with specified channel and ID")
+                }
             }
         }
     }
