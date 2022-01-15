@@ -15,10 +15,6 @@ export default class RefreshThread extends Command {
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("add")
                     .setDescription("Adds a thread to refresh")
-                    .addChannelOption((option: SlashCommandChannelOption) =>
-                        option.setName("channel")
-                            .setDescription("The channel that the thread is in")
-                            .setRequired(true))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("thread_id")
                             .setDescription("The ID of the thread")
@@ -32,10 +28,6 @@ export default class RefreshThread extends Command {
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("remove")
                     .setDescription("Stops a thread from being refreshed")
-                    .addChannelOption((option: SlashCommandChannelOption) =>
-                        option.setName("channel")
-                            .setDescription("The channel that the thread is in")
-                            .setRequired(true))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("thread_id")
                             .setDescription("The ID of the thread message")
@@ -46,10 +38,9 @@ export default class RefreshThread extends Command {
         Logger.log(Severity.Info, `Command called: ${this._data.name}`);
 
         const guildId: string | null = interaction.guildId;
-        const channelId: string | undefined = interaction.options.getChannel("channel")?.id;
         const threadId: string | null = interaction.options.getString("thread_id");
 
-        if (!guildId || !channelId || !threadId) {
+        if (!guildId || !threadId) {
             return interaction.reply("Error! Thread not found");
         }
 
