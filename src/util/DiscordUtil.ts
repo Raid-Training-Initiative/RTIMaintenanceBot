@@ -1,5 +1,5 @@
 import { AnyChannel, Guild } from "discord.js";
-import { App } from "src/App";
+import { App } from "../App";
 
 export default class DiscordUtil {
     public static async threadExistsInGuild(guildId: string, threadId: string): Promise<boolean> {

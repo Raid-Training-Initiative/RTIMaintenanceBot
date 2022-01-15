@@ -67,7 +67,7 @@ export default class RefreshThread extends Command {
                 if (found) {
                     return interaction.reply("Successfully removed thread from refresh schedule");
                 } else {
-                    return interaction.reply("Error! Could not find thread with specified channel and ID")
+                    return interaction.reply("Error! Could not find thread with specified ID")
                 }
             }
         }
