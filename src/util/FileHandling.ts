@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import DiscordUtil from "./DiscordUtil";
 import { RefreshRate } from "./enum/RefreshRate";
 import { IRefreshThread } from "./interface/IRefreshThread";
 import { Logger, Severity } from "./Logger";
@@ -29,7 +30,7 @@ export default class FileHandling {
         }
     }
 
-    public static async addRefreshThread(guildId: string, channelId: string, threadId: string, refreshRate: RefreshRate): Promise<void> {
+    public static async addRefreshThread(guildId: string, threadId: string, refreshRate: RefreshRate): Promise<boolean> {
         this.createFoldersIfNotExist(guildId);
 
         let refreshThreadData: { threads: IRefreshThread[] };
@@ -42,8 +43,14 @@ export default class FileHandling {
         }
 
         const refreshThreads: IRefreshThread[] = refreshThreadData.threads;
+
+        const foundRefreshThreads = refreshThreads.filter(refreshThread => 
+            refreshThread.threadId == threadId);
+        if (foundRefreshThreads.length != 0) {
+            return false;
+        }
+        
         const newRefreshThread: IRefreshThread = {
-            channelId: channelId,
             threadId: threadId,
             refreshRate: refreshRate
         }
@@ -54,9 +61,11 @@ export default class FileHandling {
                 Logger.logError(Severity.Error, err);
             }
         });
+
+        return true;
     }
 
-    public static async removeRefreshThread(guildId: string, channelId: string, threadId: string): Promise<boolean> {
+    public static async removeRefreshThread(guildId: string, threadId: string): Promise<boolean> {
         if (!this.dataExists() || !this.guildDataExists(guildId) || !this.refreshThreadDataExists(guildId)) {
             return false;
         }
@@ -68,7 +77,6 @@ export default class FileHandling {
         }
 
         const foundRefreshThreads = refreshThreads.filter(refreshThread => 
-            refreshThread.channelId != channelId &&
             refreshThread.threadId != threadId);
         
         // If no threads were found with the specified channel and thread ID

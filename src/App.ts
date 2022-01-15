@@ -8,6 +8,10 @@ import Command from "./commands/base/Command";
 export class App {
     private static _app: App | undefined;
     private _config: IConfig;
+    private _client: Client;
+    public get client() {
+        return this._client;
+    }
     
     public static initiate(config: IConfig) {
         if (!this._app) {
@@ -30,25 +34,25 @@ export class App {
      * Runs the Discord bot.
      */
     public async run() { 
-        const client = new Client({intents: [Intents.FLAGS.GUILDS]})
+        this._client = new Client({intents: [Intents.FLAGS.GUILDS]})
 
-        client.commands = new Collection();
+        this._client.commands = new Collection();
         const commandFiles = fs.readdirSync(path.join(__dirname, "./commands")).filter(commandFile => commandFile.endsWith(".js"));
  
         for (const commandFile of commandFiles) {
             const command = require(path.join(__dirname, `./commands/${commandFile}`));
             const importedCommand: Command = new command.default() as Command;
-            client.commands.set(importedCommand.data.name, importedCommand);
+            this._client.commands.set(importedCommand.data.name, importedCommand);
         }
 
-        client.once("ready", () => {
+        this._client.once("ready", () => {
             Logger.log(Severity.Info, "Initiated!");
         })
 
-        client.on('interactionCreate', async interaction => {
+        this._client.on('interactionCreate', async interaction => {
             if (!interaction.isCommand()) return;
         
-            const command = client.commands.get(interaction.commandName);
+            const command = this._client.commands.get(interaction.commandName);
         
             if (!command) return;
         
@@ -60,7 +64,7 @@ export class App {
             }
         });
 
-        client.login(this._config.apiKey);
+        this._client.login(this._config.apiKey);
     }
 }
 

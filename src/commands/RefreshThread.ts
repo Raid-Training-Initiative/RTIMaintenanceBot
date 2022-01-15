@@ -1,10 +1,10 @@
 import { SlashCommandBuilder, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
-import { ChannelType } from "discord-api-types";
 import { CommandInteraction } from "discord.js";
 import FileHandling from "../util/FileHandling";
 import { RefreshRate } from "../util/enum/RefreshRate";
 import { Logger, Severity } from "../util/Logger";
 import Command from "./base/Command";
+import DiscordUtil from "../util/DiscordUtil";
 
 export default class RefreshThread extends Command {
     constructor() {
@@ -15,11 +15,6 @@ export default class RefreshThread extends Command {
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("add")
                     .setDescription("Adds a thread to refresh")
-                    .addChannelOption((option: SlashCommandChannelOption) =>
-                        option.setName("channel")
-                            .setDescription("The channel that the thread is in")
-                            .setRequired(true)
-                            .addChannelType(ChannelType.GuildText))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("thread_id")
                             .setDescription("The ID of the thread message")
@@ -33,11 +28,6 @@ export default class RefreshThread extends Command {
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("remove")
                     .setDescription("Stops a thread from being refreshed")
-                    .addChannelOption((option: SlashCommandChannelOption) =>
-                        option.setName("channel")
-                            .setDescription("The channel that the thread is in")
-                            .setRequired(true)
-                            .addChannelType(ChannelType.GuildText))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("thread_id")
                             .setDescription("The ID of the thread message")
@@ -57,14 +47,22 @@ export default class RefreshThread extends Command {
 
         switch (interaction.options.getSubcommand()) {
             case "add": {
+                if (!DiscordUtil.threadExistsInGuild(guildId, threadId)) {
+                    return interaction.reply("Error! That thread doesn't exist in this server");
+                }
+
                 let refreshRate: string | null = interaction.options.getString("refresh_rate", false);
                 refreshRate = refreshRate == null ? RefreshRate.WEEKLY : refreshRate;
-                FileHandling.addRefreshThread(guildId, channelId, threadId, RefreshRate[refreshRate.toUpperCase()])
+                const noDupes = await FileHandling.addRefreshThread(guildId, threadId, RefreshRate[refreshRate.toUpperCase()])
 
-                return interaction.reply("Successfully added thread to refresh schedule")
+                if (noDupes) {
+                    return interaction.reply("Successfully added thread to refresh schedule");
+                } else {
+                    return interaction.reply("Error! That thread is already part of the refresh schedule")
+                }
             }
             case "remove": {
-                const found: boolean = await FileHandling.removeRefreshThread(guildId, channelId, threadId);
+                const found: boolean = await FileHandling.removeRefreshThread(guildId, threadId);
 
                 if (found) {
                     return interaction.reply("Successfully removed thread from refresh schedule");
