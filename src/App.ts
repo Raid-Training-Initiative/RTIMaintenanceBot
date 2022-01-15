@@ -4,6 +4,7 @@ import { Client, Collection, Intents } from "discord.js";
 import * as fs from "fs";
 import * as path from "path";
 import Command from "./commands/base/Command";
+import RefreshThreadHandler from "./util/handler/RefreshThreadHandler";
 
 export class App {
     private static _app: App | undefined;
@@ -65,6 +66,8 @@ export class App {
         });
 
         this._client.login(this._config.apiKey);
+
+        RefreshThreadHandler.scheduleJobs();
     }
 }
 

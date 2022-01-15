@@ -1,8 +1,8 @@
 import * as fs from "fs";
-import DiscordUtil from "./DiscordUtil";
-import { RefreshRate } from "./enum/RefreshRate";
-import { IRefreshThread } from "./interface/IRefreshThread";
-import { Logger, Severity } from "./Logger";
+import DiscordUtil from "../DiscordUtil";
+import { RefreshRate } from "../enum/RefreshRate";
+import { IRefreshThread } from "../interface/IRefreshThread";
+import { Logger, Severity } from "../Logger";
 
 export default class FileHandling {
     private static DATA_DIR: string = "./data";
@@ -30,20 +30,33 @@ export default class FileHandling {
         }
     }
 
+    public static readThreadRefreshFile(guildId: string): { threads: IRefreshThread[] } {
+        return JSON.parse(fs.readFileSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, "utf8"))
+    }
+
+    public static async writeToThreadRefreshFile(guildId: string, content: { threads: IRefreshThread[] }): Promise<boolean> {
+        fs.writeFile(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, JSON.stringify(content, null, 2), "utf-8", (err) => {
+            if (err) {
+                Logger.logError(Severity.Error, err);
+                return false;
+            }
+        });
+        return true;
+    }
+
     public static async addRefreshThread(guildId: string, threadId: string, refreshRate: RefreshRate): Promise<boolean> {
         this.createFoldersIfNotExist(guildId);
 
         let refreshThreadData: { threads: IRefreshThread[] };
 
         if (!this.refreshThreadDataExists(guildId)) {
-            refreshThreadData = { threads: []};
-            fs.writeFileSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, JSON.stringify(refreshThreadData, null, 2), "utf-8");
+            refreshThreadData = { threads: [] };
+            await this.writeToThreadRefreshFile(guildId, refreshThreadData)
         } else {
-            refreshThreadData = JSON.parse(fs.readFileSync(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, 'utf8'));
+            refreshThreadData = this.readThreadRefreshFile(guildId);
         }
 
         const refreshThreads: IRefreshThread[] = refreshThreadData.threads;
-
         const foundRefreshThreads = refreshThreads.filter(refreshThread => 
             refreshThread.threadId == threadId);
         if (foundRefreshThreads.length != 0) {
@@ -55,12 +68,7 @@ export default class FileHandling {
             refreshRate: refreshRate
         }
         refreshThreads.push(newRefreshThread);
-
-        fs.writeFile(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, JSON.stringify({threads: refreshThreads}, null, 2), "utf-8", (err) => {
-            if (err) {
-                Logger.logError(Severity.Error, err);
-            }
-        });
+        this.writeToThreadRefreshFile(guildId, { threads: refreshThreads });
 
         return true;
     }
@@ -84,13 +92,8 @@ export default class FileHandling {
             return false;
         }
 
-        fs.writeFile(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.REFRESHTHREADS_FILE}`, JSON.stringify({threads: foundRefreshThreads}, null, 2), "utf-8", (err) => {
-            if (err) {
-                Logger.logError(Severity.Error, err);
-                return false;
-            }
-        });
+        const success: boolean = await this.writeToThreadRefreshFile(guildId, { threads: refreshThreads });
 
-        return true;
+        return success;
     }
 }

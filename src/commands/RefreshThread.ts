@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import FileHandling from "../util/FileHandling";
+import FileHandling from "../util/handler/FileHandler";
 import { RefreshRate } from "../util/enum/RefreshRate";
 import { Logger, Severity } from "../util/Logger";
 import Command from "./base/Command";
@@ -15,9 +15,13 @@ export default class RefreshThread extends Command {
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("add")
                     .setDescription("Adds a thread to refresh")
+                    .addChannelOption((option: SlashCommandChannelOption) =>
+                        option.setName("channel")
+                            .setDescription("The channel that the thread is in")
+                            .setRequired(true))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("thread_id")
-                            .setDescription("The ID of the thread message")
+                            .setDescription("The ID of the thread")
                             .setRequired(true))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("refresh_rate")
@@ -28,6 +32,10 @@ export default class RefreshThread extends Command {
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("remove")
                     .setDescription("Stops a thread from being refreshed")
+                    .addChannelOption((option: SlashCommandChannelOption) =>
+                        option.setName("channel")
+                            .setDescription("The channel that the thread is in")
+                            .setRequired(true))
                     .addStringOption((option: SlashCommandStringOption) =>
                         option.setName("thread_id")
                             .setDescription("The ID of the thread message")
@@ -67,7 +75,7 @@ export default class RefreshThread extends Command {
                 if (found) {
                     return interaction.reply("Successfully removed thread from refresh schedule");
                 } else {
-                    return interaction.reply("Error! Could not find thread with specified ID")
+                    return interaction.reply("Error! Could not find thread with specified thread and channel ID")
                 }
             }
         }
