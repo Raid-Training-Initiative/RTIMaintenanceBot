@@ -94,6 +94,10 @@ function loadConfiguration(): IConfig | null {
         case "Debug":
             confFile = "../../Config.json";
         break;
+        case "Guild":
+            return null;
+        case "Global":
+            return null;
         default:
             Logger.log(Severity.Error, "Invalid configuration name");
             return null;
