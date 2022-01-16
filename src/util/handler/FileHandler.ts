@@ -92,7 +92,7 @@ export default class FileHandling {
             return false;
         }
 
-        const success: boolean = await this.writeToThreadRefreshFile(guildId, { threads: refreshThreads });
+        const success: boolean = await this.writeToThreadRefreshFile(guildId, { threads: foundRefreshThreads });
 
         return success;
     }
