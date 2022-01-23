@@ -1,5 +1,4 @@
 import * as fs from "fs";
-import DiscordUtil from "../DiscordUtil";
 import { RefreshRate } from "../enum/RefreshRate";
 import { IRefreshThread } from "../interface/IRefreshThread";
 import { Logger, Severity } from "../Logger";
@@ -7,6 +6,7 @@ import { Logger, Severity } from "../Logger";
 export default class FileHandling {
     private static DATA_DIR: string = "./data";
     private static REFRESHTHREADS_FILE: string = "refreshthreads.json";
+    private static OFFICERROLE_FILE: string = "officerrole.json";
     
     private static dataExists(): boolean {
         return fs.existsSync(`${FileHandling.DATA_DIR}`);
@@ -42,6 +42,23 @@ export default class FileHandling {
             }
         });
         return true;
+    }
+
+    public static async writeToOfficerRoleFile(guildId: string, content: { officerRole: string }): Promise<boolean> {
+        fs.writeFile(`${FileHandling.DATA_DIR}/${guildId}/${FileHandling.OFFICERROLE_FILE}`, JSON.stringify(content, null, 2), "utf-8", (err) => {
+            if (err) {
+                Logger.logError(Severity.Error, err);
+                return false;
+            }
+        });
+        return true;
+    }
+
+    public static async setOfficerRole(guildId: string, roleId: string): Promise<boolean> {
+        this.createFoldersIfNotExist(guildId);
+        const officerRoleData: { officerRole: string } = { officerRole: roleId };
+
+        return this.writeToOfficerRoleFile(guildId, officerRoleData);
     }
 
     public static async addRefreshThread(guildId: string, threadId: string, refreshRate: RefreshRate): Promise<boolean> {
