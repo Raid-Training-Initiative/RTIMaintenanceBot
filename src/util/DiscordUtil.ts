@@ -1,4 +1,5 @@
-import { AnyChannel, Guild, ThreadChannel } from "discord.js";
+import { AnyChannel, ApplicationCommand, Collection, Guild, ThreadChannel } from "discord.js";
+import Command from "src/commands/base/Command";
 import { App } from "../App";
 
 export default class DiscordUtil {
@@ -29,6 +30,17 @@ export default class DiscordUtil {
 
         const thread: ThreadChannel = channel as ThreadChannel;
         thread.setArchived(false);
+
+        return true;
+    }
+
+    public static async updateCommandRolePermission(guildId: string, roleId: string): Promise<boolean> {
+        const guild: Guild | null = await App.instance().client.guilds.fetch(guildId);
+        if (guild == null) {
+            return false;
+        }
+
+        const commands: Collection<string, ApplicationCommand<{}>> | null = await guild.commands.cache; // TODO
 
         return true;
     }

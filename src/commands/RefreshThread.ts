@@ -12,6 +12,7 @@ export default class RefreshThread extends Command {
         this._data = new SlashCommandBuilder()
             .setName("refreshthread")
             .setDescription("Sets a thread for the bot to refresh")
+            .setDefaultPermission(false)
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>
                 subcommand.setName("add")
                     .setDescription("Adds a thread to refresh")

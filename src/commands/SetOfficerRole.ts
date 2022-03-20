@@ -1,5 +1,6 @@
 import { SlashCommandBuilder, SlashCommandRoleOption } from "@discordjs/builders";
 import { CommandInteraction, Permissions } from "discord.js";
+import DiscordUtil from "src/util/DiscordUtil";
 import FileHandling from "src/util/handler/FileHandler";
 import { Logger, Severity } from "../util/Logger";
 import Command from "./base/Command";
@@ -30,6 +31,7 @@ export default class SetOfficerRole extends Command {
         }
 
         const success = await FileHandling.setOfficerRole(guildId, roleId);
+        DiscordUtil.updateCommandRolePermission(guildId, roleId); // TODO
 
         if (success) {
             return interaction.reply("Successfully set officer role");
