@@ -26,7 +26,7 @@ export default class SetOfficerRole extends Command {
         const roleId: string | undefined = interaction.options.getRole("officer_role")?.id;
 
         if (!guildId || !roleId) {
-            return interaction.reply("Error! Thread not found");
+            return interaction.reply("Error! Role not found");
         }
 
         const success = await FileHandling.setOfficerRole(guildId, roleId);
