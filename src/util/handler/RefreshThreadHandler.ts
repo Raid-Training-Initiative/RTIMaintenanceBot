@@ -4,7 +4,7 @@ import { App } from '../../App';
 import DiscordUtil from '../DiscordUtil';
 import { RefreshRate } from '../enum/RefreshRate';
 import { Logger, Severity } from "../Logger";
-import FileHandling from './FileHandler';
+import FileHandling from './FileHandling';
 
 export default class RefreshThreadHandler {
     private static unarchiveThreads(refreshRate: RefreshRate): void {

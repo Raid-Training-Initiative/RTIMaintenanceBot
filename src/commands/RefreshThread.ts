@@ -1,6 +1,6 @@
 import { SlashCommandBuilder, SlashCommandChannelOption, SlashCommandStringOption, SlashCommandSubcommandBuilder } from "@discordjs/builders";
 import { CommandInteraction } from "discord.js";
-import FileHandling from "../util/handler/FileHandler";
+import FileHandling from "../util/handler/FileHandling";
 import { RefreshRate } from "../util/enum/RefreshRate";
 import { Logger, Severity } from "../util/Logger";
 import Command from "./base/Command";
@@ -9,8 +9,9 @@ import DiscordUtil from "../util/DiscordUtil";
 export default class RefreshThread extends Command {
     constructor() {
         super();
+        this._name = "refreshthread";
         this._data = new SlashCommandBuilder()
-            .setName("refreshthread")
+            .setName(this._name)
             .setDescription("Sets a thread for the bot to refresh")
             .setDefaultPermission(false)
             .addSubcommand((subcommand: SlashCommandSubcommandBuilder) =>

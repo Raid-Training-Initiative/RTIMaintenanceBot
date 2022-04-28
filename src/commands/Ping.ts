@@ -6,8 +6,9 @@ import Command from "./base/Command";
 export default class Ping extends Command {
     constructor() {
         super();
+        this._name = "ping";
         this._data = new SlashCommandBuilder()
-            .setName('ping')
+            .setName(this._name)
             .setDescription('Replies with Pong!');
     }
         
