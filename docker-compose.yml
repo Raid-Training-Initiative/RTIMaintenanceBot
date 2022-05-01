@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  api:
+    image: rtimaintenancebot
+    build: .
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ./clients:/clients    
+    networks:
+      - RTIBot-network-prod
+    container_name: RTIMaintenanceBot
+networks:
+  RTIBot-network-prod:
+    external: true
