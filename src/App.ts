@@ -6,10 +6,12 @@ import * as path from "path";
 import Command from "./commands/base/Command";
 import RefreshThreadHandler from "./util/handler/RefreshThreadHandler";
 
+type CommandsClient = Client & { commands?: Collection<string, Command> };
+
 export class App {
     private static _app: App | undefined;
     private _config: IConfig;
-    private _client: Client;
+    private _client: CommandsClient;
     public get client() {
         return this._client;
     }
@@ -35,8 +37,7 @@ export class App {
      * Runs the Discord bot.
      */
     public async run() { 
-        this._client = new Client({intents: [Intents.FLAGS.GUILDS]})
-
+        this._client = new Client({intents: [Intents.FLAGS.GUILDS]});
         this._client.commands = new Collection();
         const commandFiles = fs.readdirSync(path.join(__dirname, "./commands")).filter(commandFile => commandFile.endsWith(".js"));
  
@@ -53,7 +54,7 @@ export class App {
         this._client.on('interactionCreate', async interaction => {
             if (!interaction.isCommand()) return;
         
-            const command = this._client.commands.get(interaction.commandName);
+            const command = this._client.commands?.get(interaction.commandName);
         
             if (!command) return;
         
