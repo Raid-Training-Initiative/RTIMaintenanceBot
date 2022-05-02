@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 RUN npm install --silent --global pm2
 RUN mkdir /data
 COPY --from=builder /build .
-COPY ["Config.json", "ConfigDebug.json", "./"]
+COPY ["Config.json", "./"]
 ARG buildId
 ENV RTIBOT_VERSION $buildId
 
