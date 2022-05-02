@@ -7,7 +7,7 @@ services:
     environment:
       NODE_ENV: production
     volumes:
-      - ./clients:/clients    
+      - ./data:/data    
     networks:
       - RTIBot-network-prod
     container_name: RTIMaintenanceBot
