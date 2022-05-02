@@ -1,4 +1,4 @@
-FROM node:12.14.1-stretch AS builder
+FROM node:16.13.1-stretch AS builder
 WORKDIR /build
 COPY ["package.json", "package-lock.json*", "tsconfig.json", "./"]
 RUN npm install --silent
@@ -6,7 +6,7 @@ RUN npm install --silent --global typescript
 COPY src src/
 RUN tsc -p tsconfig.json
 
-FROM node:12.14.1-stretch
+FROM node:16.13.1-stretch
 ENV NODE_ENV production
 ENV CONFIG Release
 WORKDIR /usr/src/app
